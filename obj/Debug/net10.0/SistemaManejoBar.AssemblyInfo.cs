@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SistemaManejoBar")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+31f94074bdcb0ad077ea9f09d31151f2188c5265")]
 [assembly: System.Reflection.AssemblyProductAttribute("SistemaManejoBar")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SistemaManejoBar")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

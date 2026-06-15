@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SistemaManejoBar.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace SistemaManejoBar.Models;
 
-public partial class BarraDbContext : IdentityDbContext<IdentityUser>
+public partial class BarraDbContext : IdentityDbContext<ApplicationUser>
 {
     
 

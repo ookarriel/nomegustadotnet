@@ -1,90 +1,153 @@
-﻿@model IEnumerable<SistemaManejoBar.Models.Coctel>
-
+@model IEnumerable<SistemaManejoBar.Models.Coctel>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Dossier de Cócteles";
+    bool esEditor = User.IsInRole("Administrador") || User.IsInRole("Bartender");
 }
 
-<h1>Carta de cocteles</h1>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h2">Dossier de Cócteles</h1>
+        @if (esEditor)
+        {
+            <div class="d-inline-flex gap-2">
+                <a asp-action="Create" class="btn btn-primary btn-sm">Añadir Cóctel</a>
+                <a asp-action="ExportarExcel" class="btn btn-success btn-sm">Excel</a>
+                <a asp-action="ExportarPDF" class="btn btn-danger btn-sm">PDF</a>
+            </div>
+        }
+    </div>
 
-<p class="accordion-button">
-    @if (User.IsInRole("Admin")){
-    <a asp-action="Create">Añadir coctel</a>}
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Coctel
-            </th>
-            <th>
-                Foto
-            </th>
-            <th>
-                Categoria
-            </th>
-            <th>
-                Cristaleria
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NombreCoctel)
-                    </td>
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.Foto))
+    <!-- Barra de búsqueda e interactividad -->
+    <div class="card mb-4 bg-light">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-2 align-items-center">
+                <input type="hidden" name="orden" value="@ViewData["OrdenActual"]" />
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input type="text" name="buscar" value="@ViewData["BuscarActual"]" class="form-control form-control-sm" placeholder="Buscar por nombre, categoría o preparación..." />
+                        <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    @if (!string.IsNullOrEmpty(ViewData["BuscarActual"]?.ToString()))
+                    {
+                        <a asp-action="Index" asp-route-orden="@ViewData["OrdenActual"]" class="btn btn-secondary btn-sm">Limpiar Búsqueda</a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resumen de resultados -->
+    <div class="mb-2 text-muted small">
+        Mostrando @ViewData["RegistroInicio"]–@ViewData["RegistroFin"] de @ViewData["TotalRegistros"] resultados
+    </div>
+
+    <!-- Tabla interactiva -->
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>
+                            <a asp-action="Index" asp-route-buscar="@ViewData["BuscarActual"]" asp-route-orden="@ViewData["NombreSortParam"]" class="text-white text-decoration-none">
+                                Cóctel 
+                                @(ViewData["OrdenActual"]?.ToString() == "nombre_desc" ? "▼" : (string.IsNullOrEmpty(ViewData["OrdenActual"]?.ToString()) ? "▲" : ""))
+                            </a>
+                        </th>
+                        <th>Foto</th>
+                        <th>
+                            <a asp-action="Index" asp-route-buscar="@ViewData["BuscarActual"]" asp-route-orden="@ViewData["CategoriaSortParam"]" class="text-white text-decoration-none">
+                                Categoría 
+                                @(ViewData["OrdenActual"]?.ToString() == "categoria_asc" ? "▲" : (ViewData["OrdenActual"]?.ToString() == "categoria_desc" ? "▼" : ""))
+                            </a>
+                        </th>
+                        <th>Cristalería</th>
+                        <th>
+                            <a asp-action="Index" asp-route-buscar="@ViewData["BuscarActual"]" asp-route-orden="@ViewData["PrecioSortParam"]" class="text-white text-decoration-none">
+                                Precio 
+                                @(ViewData["OrdenActual"]?.ToString() == "precio_asc" ? "▲" : (ViewData["OrdenActual"]?.ToString() == "precio_desc" ? "▼" : ""))
+                            </a>
+                        </th>
+                        <th class="text-end px-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No se encontraron cócteles.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
                         {
-                            <img src="@item.Foto" width="100" height="100" style="object-fit: cover;" class="rounded img-thumbnail" />
+                            <tr>
+                                <td>
+                                    <strong>@Html.DisplayFor(modelItem => item.NombreCoctel)</strong>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.Foto))
+                                    {
+                                        <img src="@item.Foto" width="60" height="60" style="object-fit: cover;" class="rounded img-thumbnail" />
+                                    }
+                                    else
+                                    {
+                                        <img src="/foto/no-imagen.png" width="60" height="60" style="object-fit: cover;" class="rounded img-thumbnail" />
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @Html.DisplayFor(modelItem => item.IdCategoriaNavigation.NombreCategoria)
+                                    </span>
+                                </td>
+                                <td class="small">
+                                    @Html.DisplayFor(modelItem => item.IdCristaleriaNavigation.NombreCristaleria)
+                                </td>
+                                <td class="text-success font-weight-bold">
+                                    $@item.PrecioVenta.ToString("N0")
+                                </td>
+                                <td class="text-end px-4">
+                                    <div class="d-inline-flex gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.IdCoctel" class="btn btn-info btn-sm text-white">Ver Más</a>
+                                        @if (esEditor)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.IdCoctel" class="btn btn-warning btn-sm">Editar</a>
+                                            <form asp-action="Delete" asp-route-id="@item.IdCoctel" method="post" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este cóctel de la barra?');">
+                                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
                         }
-                        else
-                        {
-                            <img src="/foto/no-imagen.png" width="100" height="100" style="object-fit: cover;" class="rounded img-thumbnail" />
-                        }
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.IdCategoriaNavigation.NombreCategoria)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.IdCristaleriaNavigation.NombreCristaleria)
-                    </td>
-                    <td>
-                        
-                        <a asp-action="Details" asp-route-id="@item.IdCoctel" class="btn btn-sm btn-info text-white">Receta</a>
-                        @if (User.IsInRole("Admin")){
-                        <a asp-action="Edit" asp-route-id="@item.IdCoctel" class="btn btn-sm btn-warning">Editar</a>
-                        <form asp-action="Delete" asp-route-id="@item.IdCoctel" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este cóctel de la barra?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                        }
-                    </td>
-                </tr>
-            }
-    </tbody>
-</table>
-<a asp-action="ExportarExcel" class="btn btn-success btn-sm">
-    Generar Reporte Excel
-</a>
-<a asp-action="ExportarPDF" class="btn btn-danger btn-sm">
-    Generar Reporte PDF
-</a>
-<nav aria-label="Navegación de páginas">
-    <ul class="pagination justify-content-center mt-4">
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-        <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
-            <a class="page-link" asp-action="Index" asp-route-pagina="@(ViewBag.PaginaActual - 1)">Anterior</a>
-        </li>
-
-        <li class="page-item disabled">
-            <span class="page-link text-dark fw-bold">
-                Página @ViewBag.PaginaActual de @ViewBag.TotalPaginas
-            </span>
-        </li>
-
-        <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas || ViewBag.TotalPaginas == 0 ? "disabled" : "")">
-            <a class="page-link" asp-action="Index" asp-route-pagina="@(ViewBag.PaginaActual + 1)">Siguiente</a>
-        </li>
-
-    </ul>
-</nav>
+    <!-- Paginación -->
+    @if (Convert.ToInt32(ViewBag.TotalPaginas) > 1)
+    {
+        <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="Navegación de páginas">
+                <ul class="pagination pagination-sm">
+                    <li class="page-item @(Convert.ToInt32(ViewBag.PaginaActual) == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-buscar="@ViewData["BuscarActual"]" asp-route-orden="@ViewData["OrdenActual"]" asp-route-pagina="@(Convert.ToInt32(ViewBag.PaginaActual) - 1)">Anterior</a>
+                    </li>
+                    @for (int i = 1; i <= Convert.ToInt32(ViewBag.TotalPaginas); i++)
+                    {
+                        <li class="page-item @(i == Convert.ToInt32(ViewBag.PaginaActual) ? "active" : "")">
+                            <a class="page-link" asp-action="Index" asp-route-buscar="@ViewData["BuscarActual"]" asp-route-orden="@ViewData["OrdenActual"]" asp-route-pagina="@i">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Convert.ToInt32(ViewBag.PaginaActual) == Convert.ToInt32(ViewBag.TotalPaginas) ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-buscar="@ViewData["BuscarActual"]" asp-route-orden="@ViewData["OrdenActual"]" asp-route-pagina="@(Convert.ToInt32(ViewBag.PaginaActual) + 1)">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>

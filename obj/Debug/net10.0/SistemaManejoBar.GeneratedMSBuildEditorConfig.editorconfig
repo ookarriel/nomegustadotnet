@@ -30,6 +30,14 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
+[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWNjb3VudC9SZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/CategoriaCoctels/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2F0ZWdvcmlhQ29jdGVscy9DcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -76,26 +84,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/Cristaleria/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ3Jpc3RhbGVyaWEvSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/DetalleRecetas/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGV0YWxsZVJlY2V0YXMvQ3JlYXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/DetalleRecetas/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGV0YWxsZVJlY2V0YXMvRGVsZXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/DetalleRecetas/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGV0YWxsZVJlY2V0YXMvRGV0YWlscy5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/DetalleRecetas/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGV0YWxsZVJlY2V0YXMvRWRpdC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/DetalleRecetas/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRGV0YWxsZVJlY2V0YXMvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/Home/Index.cshtml]
@@ -156,6 +144,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/TipoIngredientes/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVGlwb0luZ3JlZGllbnRlcy9JbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/Users/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlcnMvQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/Users/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvVXNlcnMvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/okarriel/Documentos/code/repos/Trabajo Programacion WEB/SistemaManejoBar/SistemaManejoBar/Views/_ViewImports.cshtml]

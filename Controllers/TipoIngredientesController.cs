@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SistemaManejoBar.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    // Controlador para gestionar los tipos de ingredientes de la barra
+    [Authorize(Roles = "Administrador")]
     public class TipoIngredientesController : Controller
     {
         private readonly BarraDbContext _context;
@@ -20,43 +21,81 @@ namespace SistemaManejoBar.Controllers
             _context = context;
         }
 
-        // GET: TipoIngredientes
-        public async Task<IActionResult> Index()
+        // GET: TipoIngredientes (Con Búsqueda, Ordenación y Paginación)
+        public async Task<IActionResult> Index(string? buscar, string? orden, int? pagina)
         {
-            return View(await _context.TipoIngredientes.ToListAsync());
+            // Persistir los filtros en la vista
+            ViewData["BuscarActual"] = buscar;
+            ViewData["OrdenActual"] = orden;
+
+            // Parámetros de ordenación
+            ViewData["NombreSortParam"] = string.IsNullOrEmpty(orden) ? "nombre_desc" : "";
+
+            var consulta = _context.TipoIngredientes.AsQueryable();
+
+            // 1. FILTRO / BUSQUEDA (al menos 2 campos en otros, aquí es por nombre o ID)
+            if (!string.IsNullOrEmpty(buscar))
+            {
+                consulta = consulta.Where(t => t.NombreTipoIngrediente.Contains(buscar) || 
+                                              t.IdTipoIngrediente.ToString().Contains(buscar));
+            }
+
+            // 2. ORDENACIÓN
+            if (orden == "nombre_desc")
+            {
+                consulta = consulta.OrderByDescending(t => t.NombreTipoIngrediente);
+            }
+            else
+            {
+                consulta = consulta.OrderBy(t => t.NombreTipoIngrediente);
+            }
+
+            // 3. PAGINACIÓN (Máximo 10 registros)
+            int registrosPorPagina = 10;
+            int numeroPagina = pagina ?? 1;
+            int totalRegistros = await consulta.CountAsync();
+
+            var listado = await consulta
+                .Skip((numeroPagina - 1) * registrosPorPagina)
+                .Take(registrosPorPagina)
+                .ToListAsync();
+
+            ViewData["PaginaActual"] = numeroPagina;
+            ViewData["TotalPaginas"] = (int)Math.Ceiling((double)totalRegistros / registrosPorPagina);
+            ViewData["TotalRegistros"] = totalRegistros;
+            ViewData["RegistroInicio"] = totalRegistros == 0 ? 0 : (numeroPagina - 1) * registrosPorPagina + 1;
+            ViewData["RegistroFin"] = Math.Min(numeroPagina * registrosPorPagina, totalRegistros);
+
+            return View(listado);
         }
 
         // GET: TipoIngredientes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var tipoIngrediente = await _context.TipoIngredientes
                 .FirstOrDefaultAsync(m => m.IdTipoIngrediente == id);
-            if (tipoIngrediente == null)
-            {
-                return NotFound();
-            }
+            if (tipoIngrediente == null) return NotFound();
 
             return View(tipoIngrediente);
         }
 
         // GET: TipoIngredientes/Create
+        [Authorize(Roles = "Administrador,Supervisor")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: TipoIngredientes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> Create([Bind("IdTipoIngrediente,NombreTipoIngrediente")] TipoIngrediente tipoIngrediente)
         {
+            ModelState.Remove("Ingredientes");
+
             if (ModelState.IsValid)
             {
                 _context.Add(tipoIngrediente);
@@ -67,32 +106,26 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: TipoIngredientes/Edit/5
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var tipoIngrediente = await _context.TipoIngredientes.FindAsync(id);
-            if (tipoIngrediente == null)
-            {
-                return NotFound();
-            }
+            if (tipoIngrediente == null) return NotFound();
+
             return View(tipoIngrediente);
         }
 
         // POST: TipoIngredientes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> Edit(int id, [Bind("IdTipoIngrediente,NombreTipoIngrediente")] TipoIngrediente tipoIngrediente)
         {
-            if (id != tipoIngrediente.IdTipoIngrediente)
-            {
-                return NotFound();
-            }
+            if (id != tipoIngrediente.IdTipoIngrediente) return NotFound();
+
+            ModelState.Remove("Ingredientes");
 
             if (ModelState.IsValid)
             {
@@ -118,19 +151,14 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: TipoIngredientes/Delete/5
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var tipoIngrediente = await _context.TipoIngredientes
                 .FirstOrDefaultAsync(m => m.IdTipoIngrediente == id);
-            if (tipoIngrediente == null)
-            {
-                return NotFound();
-            }
+            if (tipoIngrediente == null) return NotFound();
 
             return View(tipoIngrediente);
         }
@@ -138,15 +166,24 @@ namespace SistemaManejoBar.Controllers
         // POST: TipoIngredientes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var tipoIngrediente = await _context.TipoIngredientes.FindAsync(id);
             if (tipoIngrediente != null)
             {
+                bool enUso = _context.Ingredientes.Any(i => i.IdTipoIngrediente == id);
+                if (enUso)
+                {
+                    TempData["Error"] = $"No se puede eliminar el tipo de ingrediente '{tipoIngrediente.NombreTipoIngrediente}' porque está asociado a uno o más ingredientes.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 _context.TipoIngredientes.Remove(tipoIngrediente);
+                await _context.SaveChangesAsync();
+                TempData["Exito"] = "Tipo de ingrediente eliminado correctamente.";
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

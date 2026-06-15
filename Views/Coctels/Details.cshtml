@@ -1,4 +1,4 @@
-﻿@model SistemaManejoBar.Models.Coctel
+@model SistemaManejoBar.Models.Coctel
 
 @{
     ViewData["Title"] = "Details";
@@ -67,6 +67,9 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdCoctel">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (User.IsInRole("Administrador") || User.IsInRole("Bartender"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.IdCoctel" class="btn btn-warning btn-sm">Editar</a>
+    }
+    <a asp-action="Index" class="btn btn-secondary btn-sm">Volver</a>
 </div>

@@ -1,48 +1,65 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using SistemaManejoBar.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SistemaManejoBar.Services;
-
-public static class RoleSeedService
+namespace SistemaManejoBar.Services
 {
-    public static async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
+    // Servicio para la inicialización y limpieza de roles y usuarios
+    public static class RoleSeedService
     {
-        // Gestores de usuarios
-        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-        // 1. ROLES
-        string[] roleNames = { "Admin", "Bartender", "Mesero" };
-
-        foreach (var roleName in roleNames)
+        public static async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
         {
-            var roleExist = await roleManager.RoleExistsAsync(roleName);
-            if (!roleExist)
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+            // 1. ROLES
+            string[] roleNames = { "Administrador", "Bartender", "Usuario" };
+
+            // Asegurar que existan los roles correctos
+            foreach (var roleName in roleNames)
             {
-                // Crea el rol si no existe e
-                await roleManager.CreateAsync(new IdentityRole(roleName));
+                var roleExist = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
             }
-        }
 
-        // 2. Crear el Usuario Administrador 
-        var adminEmail = "admin@barramanejo.com";
-        var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-        if (adminUser == null)
-        {
-            var newAdmin = new IdentityUser
+            // Eliminar roles antiguos no requeridos (ej: Supervisor, Admin, Mesero)
+            var rolesExistentes = await roleManager.Roles.ToListAsync();
+            foreach (var rol in rolesExistentes)
             {
-                UserName = adminEmail,
-                Email = adminEmail,
-                EmailConfirmed = true
-            };
+                if (rol.Name != null && !roleNames.Contains(rol.Name))
+                {
+                    await roleManager.DeleteAsync(rol);
+                }
+            }
 
-            // Creamos el usuario con una contraseña por defecto segura
-            var createAdmin = await userManager.CreateAsync(newAdmin, "Admin123!");
+            // 2. Crear el Usuario Administrador por defecto
+            var adminEmail = "admin@sistema.cl";
+            var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
-            if (createAdmin.Succeeded)
+            if (adminUser == null)
             {
-                // Asignamos el rol de Admin al nuevo usuario
-                await userManager.AddToRoleAsync(newAdmin, "Admin");
+                var newAdmin = new ApplicationUser
+                {
+                    UserName = adminEmail,
+                    Email = adminEmail,
+                    EmailConfirmed = true,
+                    NombreCompleto = "Administrador del Sistema",
+                    FechaRegistro = DateTime.Now,
+                    Activo = true
+                };
+
+                var createAdmin = await userManager.CreateAsync(newAdmin, "Admin123!");
+
+                if (createAdmin.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(newAdmin, "Administrador");
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,29 +25,69 @@ namespace SistemaManejoBar.Controllers
             _context = context;
         }
 
-        // GET: Coctels
-        public async Task<IActionResult> Index(int? pagina)
+        // GET: Coctels (Con Búsqueda, Ordenación y Paginación)
+        public async Task<IActionResult> Index(string? buscar, string? orden, int? pagina)
         {
-            
-            int registrosPorPagina = 5; 
-            int numeroPagina = pagina ?? 1; 
+            // Persistir filtros
+            ViewData["BuscarActual"] = buscar;
+            ViewData["OrdenActual"] = orden;
+
+            // Parámetros de ordenación
+            ViewData["NombreSortParam"] = string.IsNullOrEmpty(orden) ? "nombre_desc" : "";
+            ViewData["PrecioSortParam"] = orden == "precio_asc" ? "precio_desc" : "precio_asc";
+            ViewData["CategoriaSortParam"] = orden == "categoria_asc" ? "categoria_desc" : "categoria_asc";
 
             var consulta = _context.Coctels
                 .Include(c => c.IdCategoriaNavigation)
-                .Include(c => c.IdCristaleriaNavigation);
+                .Include(c => c.IdCristaleriaNavigation)
+                .AsQueryable();
 
-           
+            // 1. BUSQUEDA (por nombre, instrucciones o categoría)
+            if (!string.IsNullOrEmpty(buscar))
+            {
+                consulta = consulta.Where(c => c.NombreCoctel.Contains(buscar) || 
+                                              c.Instrucciones.Contains(buscar) || 
+                                              c.IdCategoriaNavigation.NombreCategoria.Contains(buscar));
+            }
+
+            // 2. ORDENACIÓN
+            switch (orden)
+            {
+                case "nombre_desc":
+                    consulta = consulta.OrderByDescending(c => c.NombreCoctel);
+                    break;
+                case "precio_asc":
+                    consulta = consulta.OrderBy(c => c.PrecioVenta);
+                    break;
+                case "precio_desc":
+                    consulta = consulta.OrderByDescending(c => c.PrecioVenta);
+                    break;
+                case "categoria_asc":
+                    consulta = consulta.OrderBy(c => c.IdCategoriaNavigation.NombreCategoria);
+                    break;
+                case "categoria_desc":
+                    consulta = consulta.OrderByDescending(c => c.IdCategoriaNavigation.NombreCategoria);
+                    break;
+                default:
+                    consulta = consulta.OrderBy(c => c.NombreCoctel);
+                    break;
+            }
+
+            // 3. PAGINACIÓN (Máximo 10 registros)
+            int registrosPorPagina = 10;
+            int numeroPagina = pagina ?? 1;
             int totalRegistros = await consulta.CountAsync();
 
-           
             var coctelesPaginados = await consulta
                 .Skip((numeroPagina - 1) * registrosPorPagina)
                 .Take(registrosPorPagina)
                 .ToListAsync();
 
-          
             ViewBag.PaginaActual = numeroPagina;
             ViewBag.TotalPaginas = (int)Math.Ceiling((double)totalRegistros / registrosPorPagina);
+            ViewData["TotalRegistros"] = totalRegistros;
+            ViewData["RegistroInicio"] = totalRegistros == 0 ? 0 : (numeroPagina - 1) * registrosPorPagina + 1;
+            ViewData["RegistroFin"] = Math.Min(numeroPagina * registrosPorPagina, totalRegistros);
 
             return View(coctelesPaginados);
         }
@@ -77,6 +117,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: Coctels/Create
+        [Authorize(Roles = "Administrador,Bartender")]
         public IActionResult Create()
         {
             ViewData["IdCategoria"] = new SelectList(_context.CategoriaCoctels, "IdCategoria", "NombreCategoria");
@@ -89,6 +130,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Coctels/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Bartender")]
         public async Task<IActionResult> Create([Bind("IdCoctel,NombreCoctel,Instrucciones,PrecioVenta,IdCategoria,IdCristaleria")] Coctel coctel, IFormFile? archivo_foto, int[] ingredientesSeleccionados)
         {
             ModelState.Remove("Foto");
@@ -152,6 +194,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: Coctels/Edit/5
+        [Authorize(Roles = "Administrador,Bartender")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -181,7 +224,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Coctels/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-       
+        [Authorize(Roles = "Administrador,Bartender")]
         public async Task<IActionResult> Edit(int id, [Bind("IdCoctel,NombreCoctel,Instrucciones,PrecioVenta,Foto,IdCategoria,IdCristaleria")] Coctel coctel, IFormFile? archivo_foto, int[] ingredientesSeleccionados)
         {
             if (id != coctel.IdCoctel)
@@ -267,6 +310,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Coctels/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Bartender")]
         public async Task<IActionResult> Delete(int id)
         {
             var coctel = await _context.Coctels.FindAsync(id);
@@ -286,6 +330,7 @@ namespace SistemaManejoBar.Controllers
             return _context.Coctels.Any(e => e.IdCoctel == id);
         }
         // GET: Coctels/ExportarExcel
+        [Authorize(Roles = "Administrador,Bartender")]
         public async Task<IActionResult> ExportarExcel()
         {
             var cocteles = await _context.Coctels
@@ -338,6 +383,7 @@ namespace SistemaManejoBar.Controllers
             }
         }
         // GET: Coctels/ExportarPDF
+        [Authorize(Roles = "Administrador,Bartender")]
         public async Task<IActionResult> ExportarPDF()
         {
             

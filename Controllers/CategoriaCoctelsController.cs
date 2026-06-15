@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SistemaManejoBar.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    // Controlador para gestionar las categorías de cócteles
+    [Authorize(Roles = "Administrador")]
     public class CategoriaCoctelsController : Controller
     {
         private readonly BarraDbContext _context;
@@ -20,10 +21,61 @@ namespace SistemaManejoBar.Controllers
             _context = context;
         }
 
-        // GET: CategoriaCoctels
-        public async Task<IActionResult> Index()
+        // GET: CategoriaCoctels (Con Búsqueda, Ordenación y Paginación)
+        public async Task<IActionResult> Index(string? buscar, string? orden, int? pagina)
         {
-            return View(await _context.CategoriaCoctels.ToListAsync());
+            // Persistir los filtros en la vista
+            ViewData["BuscarActual"] = buscar;
+            ViewData["OrdenActual"] = orden;
+
+            // Parámetros de ordenación alternantes
+            ViewData["NombreSortParam"] = string.IsNullOrEmpty(orden) ? "nombre_desc" : "";
+            ViewData["DescSortParam"] = orden == "desc_asc" ? "desc_desc" : "desc_asc";
+
+            var consulta = _context.CategoriaCoctels.AsQueryable();
+
+            // 1. FILTRO / BÚSQUEDA
+            if (!string.IsNullOrEmpty(buscar))
+            {
+                consulta = consulta.Where(c => c.NombreCategoria.Contains(buscar) || 
+                                              (c.Descripcion != null && c.Descripcion.Contains(buscar)));
+            }
+
+            // 2. ORDENACIÓN
+            switch (orden)
+            {
+                case "nombre_desc":
+                    consulta = consulta.OrderByDescending(c => c.NombreCategoria);
+                    break;
+                case "desc_asc":
+                    consulta = consulta.OrderBy(c => c.Descripcion);
+                    break;
+                case "desc_desc":
+                    consulta = consulta.OrderByDescending(c => c.Descripcion);
+                    break;
+                default:
+                    consulta = consulta.OrderBy(c => c.NombreCategoria);
+                    break;
+            }
+
+            // 3. PAGINACIÓN (Máximo 10 registros)
+            int registrosPorPagina = 10;
+            int numeroPagina = pagina ?? 1;
+            int totalRegistros = await consulta.CountAsync();
+
+            var listado = await consulta
+                .Skip((numeroPagina - 1) * registrosPorPagina)
+                .Take(registrosPorPagina)
+                .ToListAsync();
+
+            // Resumen e info para controles de paginación
+            ViewData["PaginaActual"] = numeroPagina;
+            ViewData["TotalPaginas"] = (int)Math.Ceiling((double)totalRegistros / registrosPorPagina);
+            ViewData["TotalRegistros"] = totalRegistros;
+            ViewData["RegistroInicio"] = totalRegistros == 0 ? 0 : (numeroPagina - 1) * registrosPorPagina + 1;
+            ViewData["RegistroFin"] = Math.Min(numeroPagina * registrosPorPagina, totalRegistros);
+
+            return View(listado);
         }
 
         // GET: CategoriaCoctels/Details/5
@@ -39,6 +91,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: CategoriaCoctels/Create
+        [Authorize(Roles = "Administrador,Supervisor")]
         public IActionResult Create()
         {
             return View();
@@ -47,9 +100,9 @@ namespace SistemaManejoBar.Controllers
         // POST: CategoriaCoctels/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> Create([Bind("IdCategoria,NombreCategoria,Descripcion")] CategoriaCoctel categoriaCoctel)
         {
-            
             ModelState.Remove("Coctels");
 
             if (ModelState.IsValid)
@@ -62,6 +115,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: CategoriaCoctels/Edit/5
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -75,11 +129,11 @@ namespace SistemaManejoBar.Controllers
         // POST: CategoriaCoctels/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> Edit(int id, [Bind("IdCategoria,NombreCategoria,Descripcion")] CategoriaCoctel categoriaCoctel)
         {
             if (id != categoriaCoctel.IdCategoria) return NotFound();
 
-          
             ModelState.Remove("Coctels");
 
             if (ModelState.IsValid)
@@ -105,10 +159,10 @@ namespace SistemaManejoBar.Controllers
             return View(categoriaCoctel);
         }
 
-     
         // POST: CategoriaCoctels/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador,Supervisor")]
         public async Task<IActionResult> Delete(int id)
         {
             var categoria = await _context.CategoriaCoctels.FindAsync(id);
@@ -118,7 +172,6 @@ namespace SistemaManejoBar.Controllers
 
                 if (categoriaEnUso)
                 {
-                    
                     TempData["Error"] = $"No se puede eliminar la categoría '{categoria.NombreCategoria}' porque tiene cócteles asociados. Elimina o cambia de categoría esos cócteles primero.";
                     return RedirectToAction(nameof(Index));
                 }
