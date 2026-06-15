@@ -1,0 +1,55 @@
+﻿@model IEnumerable<SistemaManejoBar.Models.CategoriaCoctel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Categorias</h1>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <strong>¡Atención!</strong> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["Exito"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <strong>¡Excelente!</strong> @TempData["Exito"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<p>
+    <a asp-action="Create">Agregar categoria</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Categoria
+            </th>
+            <th>
+                Descripcion
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreCategoria)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descripcion)
+            </td>
+            <td>
+                    <form asp-action="Delete" asp-route-id="@item.IdCategoria" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este cóctel de la barra?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

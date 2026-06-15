@@ -1,0 +1,72 @@
+﻿@model SistemaManejoBar.Models.Coctel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Detalles de la receta</h1>
+
+<div>
+    <h4>Coctel</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Nombre del coctel
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NombreCoctel)
+        </dd>
+        <dt class = "col-sm-2">
+            Instrucciones
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Instrucciones)
+        </dd>
+        <dt class = "col-sm-2">
+            Precio de venta
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PrecioVenta)
+        </dd>
+        <dt class="col-sm-2">
+            Categoria
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IdCategoriaNavigation.NombreCategoria)
+        </dd>
+        <dt class="col-sm-2">
+            Cristaleria
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IdCristaleriaNavigation.NombreCristaleria)
+        </dd>
+        <dt class="col-sm-2">
+            Ingredientes
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.DetalleReceta != null && Model.DetalleReceta.Any())
+            {
+                <ul>
+                    @foreach (var detalle in Model.DetalleReceta)
+                    {
+                        <li>@detalle.IdIngredienteNavigation.NombreIngrediente</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <span class="text-muted">Sin ingredientes asignados.</span>
+            }
+        </dd>
+        <dt class = "col-sm-2">
+            Foto
+        </dt>
+        <dd class = "col-sm-10">
+            <img src="@Model.Foto" alt="Foto del coctel" class="img-fluid" />
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.IdCoctel">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

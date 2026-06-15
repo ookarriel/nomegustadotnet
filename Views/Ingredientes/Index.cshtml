@@ -1,0 +1,54 @@
+﻿@model IEnumerable<SistemaManejoBar.Models.Ingrediente>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Ingredientes</h1>
+
+<p>
+    <a asp-action="Create"> Agregar Ingrediente </a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Ingrediente
+            </th>
+            <th>
+                Stock
+            </th>
+            <th>
+                Unidad de medida
+            </th>
+            <th>
+                Tipo de ingrediente
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreIngrediente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Stock)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Unidad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdTipoIngredienteNavigation.NombreTipoIngrediente)
+            </td>
+            <td>
+                <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.IdIngrediente">Edit</a> |
+                <form asp-action="Delete" asp-route-id="@item.IdIngrediente" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este ingrediente? Se borrará de todos los cócteles que lo utilicen.');">
+                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

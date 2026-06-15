@@ -1,0 +1,42 @@
+﻿@model IEnumerable<SistemaManejoBar.Models.Cristalerium>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Tipos de vasos</h1>
+
+<p>
+    <a asp-action="Create">Agregar tipo de vaso</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Vaso
+            </th>
+            <th>
+                Capacidad en OZ
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreCristaleria)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CapacidadOz)
+            </td>
+            <td>
+                <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.IdCristaleria">Edit</a> |
+                <form asp-action="Delete" asp-route-id="@item.IdCristaleria" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este vaso?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,90 @@
+﻿@model IEnumerable<SistemaManejoBar.Models.Coctel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Carta de cocteles</h1>
+
+<p class="accordion-button">
+    @if (User.IsInRole("Admin")){
+    <a asp-action="Create">Añadir coctel</a>}
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Coctel
+            </th>
+            <th>
+                Foto
+            </th>
+            <th>
+                Categoria
+            </th>
+            <th>
+                Cristaleria
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NombreCoctel)
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.Foto))
+                        {
+                            <img src="@item.Foto" width="100" height="100" style="object-fit: cover;" class="rounded img-thumbnail" />
+                        }
+                        else
+                        {
+                            <img src="/foto/no-imagen.png" width="100" height="100" style="object-fit: cover;" class="rounded img-thumbnail" />
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdCategoriaNavigation.NombreCategoria)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdCristaleriaNavigation.NombreCristaleria)
+                    </td>
+                    <td>
+                        
+                        <a asp-action="Details" asp-route-id="@item.IdCoctel" class="btn btn-sm btn-info text-white">Receta</a>
+                        @if (User.IsInRole("Admin")){
+                        <a asp-action="Edit" asp-route-id="@item.IdCoctel" class="btn btn-sm btn-warning">Editar</a>
+                        <form asp-action="Delete" asp-route-id="@item.IdCoctel" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este cóctel de la barra?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                        }
+                    </td>
+                </tr>
+            }
+    </tbody>
+</table>
+<a asp-action="ExportarExcel" class="btn btn-success btn-sm">
+    Generar Reporte Excel
+</a>
+<a asp-action="ExportarPDF" class="btn btn-danger btn-sm">
+    Generar Reporte PDF
+</a>
+<nav aria-label="Navegación de páginas">
+    <ul class="pagination justify-content-center mt-4">
+
+        <li class="page-item @(ViewBag.PaginaActual == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-pagina="@(ViewBag.PaginaActual - 1)">Anterior</a>
+        </li>
+
+        <li class="page-item disabled">
+            <span class="page-link text-dark fw-bold">
+                Página @ViewBag.PaginaActual de @ViewBag.TotalPaginas
+            </span>
+        </li>
+
+        <li class="page-item @(ViewBag.PaginaActual == ViewBag.TotalPaginas || ViewBag.TotalPaginas == 0 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-pagina="@(ViewBag.PaginaActual + 1)">Siguiente</a>
+        </li>
+
+    </ul>
+</nav>

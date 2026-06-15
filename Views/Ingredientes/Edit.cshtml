@@ -1,0 +1,49 @@
+﻿@model SistemaManejoBar.Models.Ingrediente
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Editar</h1>
+
+<h4>Ingrediente</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdIngrediente" />
+            <div class="form-group">
+                <label asp-for="NombreIngrediente" class="control-label">Ingrediente</label>
+                <input asp-for="NombreIngrediente" class="form-control" />
+                <span asp-validation-for="NombreIngrediente" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label asp-for="Stock" class="control-label">Stock</label>
+                <input asp-for="Stock" class="form-control" />
+                <span asp-validation-for="Stock" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label asp-for="Unidad" class="control-label">Unidad</label>
+                <input asp-for="Unidad" class="form-control" />
+                <span asp-validation-for="Unidad" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <label asp-for="IdTipoIngrediente" class="control-label">Tipo ingrediente</label>
+                <select asp-for="IdTipoIngrediente" class="form-control" asp-items="ViewBag.IdTipoIngrediente"></select>
+                <span asp-validation-for="IdTipoIngrediente" class="text-danger"></span>
+            </div><br />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div><br />
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
