@@ -21,7 +21,10 @@
 
                     <div class="d-flex justify-content-between mt-4">
                         <a asp-action="Index" class="btn btn-secondary btn-sm">Volver</a>
-                        <a asp-action="Edit" asp-route-id="@Model.IdTipoIngrediente" class="btn btn-warning btn-sm">Editar</a>
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.IdTipoIngrediente" class="btn btn-warning btn-sm">Editar</a>
+                        }
                     </div>
                 </div>
             </div>

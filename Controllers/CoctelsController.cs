@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SistemaManejoBar.Controllers
 {
-    
+    [Authorize]
     public class CoctelsController : Controller
     {
         private readonly BarraDbContext _context;

@@ -61,6 +61,13 @@ namespace SistemaManejoBar.Services
                     await userManager.AddToRoleAsync(newAdmin, "Administrador");
                 }
             }
+            else
+            {
+                if (!await userManager.IsInRoleAsync(adminUser, "Administrador"))
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Administrador");
+                }
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace SistemaManejoBar.Controllers
 {
     // Controlador para gestionar los tipos de ingredientes de la barra
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,Bartender")]
     public class TipoIngredientesController : Controller
     {
         private readonly BarraDbContext _context;
@@ -82,7 +82,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: TipoIngredientes/Create
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             return View();
@@ -91,7 +91,7 @@ namespace SistemaManejoBar.Controllers
         // POST: TipoIngredientes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create([Bind("IdTipoIngrediente,NombreTipoIngrediente")] TipoIngrediente tipoIngrediente)
         {
             ModelState.Remove("Ingredientes");
@@ -106,7 +106,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: TipoIngredientes/Edit/5
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -120,7 +120,7 @@ namespace SistemaManejoBar.Controllers
         // POST: TipoIngredientes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id, [Bind("IdTipoIngrediente,NombreTipoIngrediente")] TipoIngrediente tipoIngrediente)
         {
             if (id != tipoIngrediente.IdTipoIngrediente) return NotFound();
@@ -151,7 +151,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: TipoIngredientes/Delete/5
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -166,7 +166,7 @@ namespace SistemaManejoBar.Controllers
         // POST: TipoIngredientes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var tipoIngrediente = await _context.TipoIngredientes.FindAsync(id);

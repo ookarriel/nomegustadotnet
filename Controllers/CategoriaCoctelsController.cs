@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace SistemaManejoBar.Controllers
 {
     // Controlador para gestionar las categorías de cócteles
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,Bartender")]
     public class CategoriaCoctelsController : Controller
     {
         private readonly BarraDbContext _context;
@@ -91,7 +91,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: CategoriaCoctels/Create
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             return View();
@@ -100,7 +100,7 @@ namespace SistemaManejoBar.Controllers
         // POST: CategoriaCoctels/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create([Bind("IdCategoria,NombreCategoria,Descripcion")] CategoriaCoctel categoriaCoctel)
         {
             ModelState.Remove("Coctels");
@@ -115,7 +115,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: CategoriaCoctels/Edit/5
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -129,7 +129,7 @@ namespace SistemaManejoBar.Controllers
         // POST: CategoriaCoctels/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id, [Bind("IdCategoria,NombreCategoria,Descripcion")] CategoriaCoctel categoriaCoctel)
         {
             if (id != categoriaCoctel.IdCategoria) return NotFound();
@@ -162,7 +162,7 @@ namespace SistemaManejoBar.Controllers
         // POST: CategoriaCoctels/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var categoria = await _context.CategoriaCoctels.FindAsync(id);

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace SistemaManejoBar.Controllers
 {
     // Controlador para gestionar los ingredientes del bar
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,Bartender")]
     public class IngredientesController : Controller
     {
         private readonly BarraDbContext _context;
@@ -101,7 +101,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: Ingredientes/Create
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             ViewData["IdTipoIngrediente"] = new SelectList(_context.TipoIngredientes, "IdTipoIngrediente", "NombreTipoIngrediente");
@@ -111,7 +111,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Ingredientes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create([Bind("IdIngrediente,NombreIngrediente,Stock,Unidad,IdTipoIngrediente")] Ingrediente ingrediente)
         {
             // Ignorar validación de las relaciones
@@ -140,7 +140,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: Ingredientes/Edit/5
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -155,7 +155,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Ingredientes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id, [Bind("IdIngrediente,NombreIngrediente,Stock,Unidad,IdTipoIngrediente")] Ingrediente ingrediente)
         {
             if (id != ingrediente.IdIngrediente) return NotFound();
@@ -190,7 +190,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Ingredientes/Delete/5 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var ingrediente = await _context.Ingredientes.FindAsync(id);

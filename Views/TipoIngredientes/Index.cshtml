@@ -1,12 +1,16 @@
 @model IEnumerable<SistemaManejoBar.Models.TipoIngrediente>
 @{
     ViewData["Title"] = "Tipos de Ingrediente";
+    bool esEditor = User.IsInRole("Administrador");
 }
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h2">Tipos de Ingrediente</h1>
-        <a asp-action="Create" class="btn btn-primary btn-sm">Agregar Tipo de Ingrediente</a>
+        @if (esEditor)
+        {
+            <a asp-action="Create" class="btn btn-primary btn-sm">Agregar Tipo de Ingrediente</a>
+        }
     </div>
 
     <!-- Alertas de estado -->
@@ -84,8 +88,11 @@
                                 <td class="text-end px-4">
                                     <div class="d-inline-flex gap-2">
                                         <a asp-action="Details" asp-route-id="@item.IdTipoIngrediente" class="btn btn-info btn-sm text-white">Detalles</a>
-                                        <a asp-action="Edit" asp-route-id="@item.IdTipoIngrediente" class="btn btn-warning btn-sm">Editar</a>
-                                        <a asp-action="Delete" asp-route-id="@item.IdTipoIngrediente" class="btn btn-danger btn-sm">Eliminar</a>
+                                        @if (esEditor)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.IdTipoIngrediente" class="btn btn-warning btn-sm">Editar</a>
+                                            <a asp-action="Delete" asp-route-id="@item.IdTipoIngrediente" class="btn btn-danger btn-sm">Eliminar</a>
+                                        }
                                     </div>
                                 </td>
                             </tr>

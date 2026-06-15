@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace SistemaManejoBar.Controllers
 {
     // Controlador para gestionar el inventario de cristalería de la barra
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,Bartender")]
     public class CristaleriaController : Controller
     {
         private readonly BarraDbContext _context;
@@ -90,7 +90,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: Cristaleria/Create
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public IActionResult Create()
         {
             return View();
@@ -99,7 +99,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Cristaleria/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Create([Bind("IdCristaleria,NombreCristaleria,CapacidadOz")] Cristalerium cristalerium)
         {
             ModelState.Remove("Coctels");
@@ -114,7 +114,7 @@ namespace SistemaManejoBar.Controllers
         }
 
         // GET: Cristaleria/Edit/5
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -128,7 +128,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Cristaleria/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Edit(int id, [Bind("IdCristaleria,NombreCristaleria,CapacidadOz")] Cristalerium cristalerium)
         {
             if (id != cristalerium.IdCristaleria) return NotFound();
@@ -161,7 +161,7 @@ namespace SistemaManejoBar.Controllers
         // POST: Cristaleria/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrador,Supervisor")]
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Delete(int id)
         {
             var cristaleria = await _context.Cristaleria.FindAsync(id);

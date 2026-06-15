@@ -1,7 +1,7 @@
 @model IEnumerable<SistemaManejoBar.Models.Ingrediente>
 @{
     ViewData["Title"] = "Inventario de Ingredientes";
-    bool esEditor = User.IsInRole("Administrador") || User.IsInRole("Supervisor");
+    bool esEditor = User.IsInRole("Administrador");
 }
 
 <div class="container-fluid py-4">

@@ -1,4 +1,4 @@
-﻿@model SistemaManejoBar.Models.Cristalerium
+@model SistemaManejoBar.Models.Cristalerium
 
 @{
     ViewData["Title"] = "Details";
@@ -25,6 +25,9 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdCristaleria">Edit</a> |
+    @if (User.IsInRole("Administrador"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.IdCristaleria">Edit</a> <text>|</text>
+    }
     <a asp-action="Index">Back to List</a>
 </div>
